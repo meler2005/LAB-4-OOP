@@ -1,0 +1,136 @@
+using System;
+
+// Базовий клас TArray
+abstract class TArray<T>
+{
+    protected T[] array; // масив елементів типу T
+
+    public TArray(int size) // конструктор класу
+    {
+        array = new T[size]; // ініціалізуємо масив заданого розміру
+    }
+
+    public virtual void Input() // метод введення елементів масиву
+    {
+        for (int i = 0; i < array.Length; i++)
+        {
+            Console.Write($"Введіть елемент {i + 1}: ");
+            array[i] = (T)Convert.ChangeType(Console.ReadLine(), typeof(T)); // зчитуємо введений рядок та перетворюємо його в тип T
+        }
+    }
+
+    public virtual void Output() // метод виведення елементів масиву
+    {
+        Console.WriteLine("Елементи масиву:");
+        foreach (var element in array)
+        {
+            Console.Write(element + " ");
+        }
+        Console.WriteLine();
+    }
+
+    public virtual void IncreaseByOne() // метод збільшення кожного елементу на одиницю
+    {
+        for (int i = 0; i < array.Length; i++)
+        {
+            dynamic value = array[i];
+            array[i] = value + 1;
+        }
+    }
+
+    public virtual void DecreaseByOne() // метод зменшення кожного елементу на одиницю
+    {
+        for (int i = 0; i < array.Length; i++)
+        {
+            dynamic value = array[i];
+            array[i] = value - 1;
+        }
+    }
+
+    public abstract double CalculateAverage(); // абстрактний метод обчислення середнього арифметичного
+}
+
+// Клас TArrayInt нащадок класу TArray для цілих чисел
+class TArrayInt : TArray<int>
+{
+    public TArrayInt(int size) : base(size) { }
+
+    public override double CalculateAverage() // реалізація методу обчислення середнього арифметичного
+    {
+        double sum = 0;
+        foreach (var element in array)
+        {
+            sum += element;
+        }
+        return sum / array.Length;
+    }
+}
+
+// Клас TArrayDouble нащадок класу TArray для дійсних чисел
+class TArrayDouble : TArray<double>
+{
+    public TArrayDouble(int size) : base(size) { }
+
+    public override double CalculateAverage() // реалізація методу обчислення середнього арифметичного
+    {
+        double sum = 0;
+        foreach (var element in array)
+        {
+            sum += element;
+        }
+        return sum / array.Length;
+    }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        Random rnd = new Random();
+        int m = 2; // Кількість масивів кожного виду
+
+        TArray<int>[] intArrays = new TArray<int>[m]; // масив масивів цілих чисел
+        TArray<double>[] doubleArrays = new TArray<double>[m]; // масив масивів дійсних чисел
+
+        // Створення m масивів цілих чисел та m масивів дійсних чисел
+        for (int i = 0; i < m; i++)
+        {
+            int size = rnd.Next(2, 5); // Випадковий розмір масиву
+            intArrays[i] = new TArrayInt(size); // ініціалізуємо масив цілих чисел
+            doubleArrays[i] = new TArrayDouble(size); // ініціалізуємо масив дійсних чисел
+        }
+
+        // Виведення всіх масивів
+        for (int i = 0; i < m; i++)
+        {
+            Console.WriteLine($"Масив цілих чисел {i + 1}:");
+            intArrays[i].Input();
+            intArrays[i].Output();
+
+            Console.WriteLine($"Масив дійсних чисел {i + 1}:");
+            doubleArrays[i].Input();
+            doubleArrays[i].Output();
+        }
+
+        // Знаходження масиву з найбільшим середнім значенням
+        TArray<int> maxAvgIntArray = intArrays[0];
+        TArray<double> maxAvgDoubleArray = doubleArrays[0];
+
+        foreach (var array in intArrays)
+        {
+            if (array.CalculateAverage() > maxAvgIntArray.CalculateAverage())
+                maxAvgIntArray = array;
+        }
+
+        foreach (var array in doubleArrays)
+        {
+            if (array.CalculateAverage() > maxAvgDoubleArray.CalculateAverage())
+                maxAvgDoubleArray = array;
+        }
+
+        Console.WriteLine("Масив з найбільшим середнім значенням (цілі числа):");
+        maxAvgIntArray.Output();
+        Console.WriteLine("Масив з найбільшим середнім значенням (дійсні числа):");
+        maxAvgDoubleArray.Output();
+    }
+}
